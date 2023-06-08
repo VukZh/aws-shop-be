@@ -1,8 +1,8 @@
-import { buildResponseBody, BuildResponseReturnType } from "~/product-service/handlers/types";
+import { BuildResponseReturnType } from "../handlers/types";
 
-export const buildResponse = <T extends buildResponseBody>(
+export const buildResponse = (
   statusCode: number,
-  body: T
+  body: any
 ): BuildResponseReturnType => ({
   statusCode: statusCode,
   headers: {

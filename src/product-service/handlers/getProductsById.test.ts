@@ -7,7 +7,7 @@ describe("getProductsById", () => {
       },
     });
     expect(data.statusCode).toBe(200);
-    expect(JSON.parse(data.body).product).toEqual({
+    expect(JSON.parse(data.body)).toEqual({
       description: "Short Product Description1",
       id: "1",
       price: 24,
