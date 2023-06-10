@@ -29,7 +29,7 @@ const GetProductsListLambda = new NodejsFunction(
   "GetProductsListLambda",
   {
     ...sharedLambdaProps,
-    functionName: "getProductsList-task3",
+    functionName: "getProductsList",
     entry: "src/product-service/handlers/getProductsList.ts",
   }
 );
@@ -39,12 +39,12 @@ const GetProductsByIdLambda = new NodejsFunction(
   "GetProductsByIdLambda",
   {
     ...sharedLambdaProps,
-    functionName: "getProductsById-task3",
+    functionName: "getProductsById",
     entry: "src/product-service/handlers/getProductsById.ts",
   }
 );
 
-const api = new apiGateway.HttpApi(stack, "ProductApi-task3", {
+const api = new apiGateway.HttpApi(stack, "ProductApi", {
   corsPreflight: {
     allowHeaders: ["*"],
     allowOrigins: ["*"],
@@ -54,7 +54,7 @@ const api = new apiGateway.HttpApi(stack, "ProductApi-task3", {
 
 api.addRoutes({
   integration: new HttpLambdaIntegration(
-    "GetProductsListIntegration-task3",
+    "GetProductsListIntegration",
     GetProductsListLambda
   ),
   path: "/products",
@@ -63,7 +63,7 @@ api.addRoutes({
 
 api.addRoutes({
   integration: new HttpLambdaIntegration(
-    "GetProductsByIdIntegration-task3",
+    "GetProductsByIdIntegration",
     GetProductsByIdLambda
   ),
   path: "/products/{productId}",

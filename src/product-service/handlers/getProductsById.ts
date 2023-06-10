@@ -1,5 +1,5 @@
 import { buildResponse } from "../handlers/helpers";
-import { productsLambdaTest as PRODUCT } from "../../product-service/mocks/data";
+import {products as PRODUCT} from "../../product-service/mocks/data";
 import { APIGatewayProxyEventPathParameters } from "aws-lambda";
 
 const getProduct = (pathParameters: APIGatewayProxyEventPathParameters) => {

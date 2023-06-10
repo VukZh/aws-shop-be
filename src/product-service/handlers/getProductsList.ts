@@ -1,5 +1,5 @@
 import { buildResponse } from "../handlers/helpers";
-import { productsLambdaTest as PRODUCTS } from "../../product-service/mocks/data";
+import {products as PRODUCTS} from "../../product-service/mocks/data";
 
 export const handler = async () => {
   try {
