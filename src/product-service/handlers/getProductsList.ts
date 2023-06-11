@@ -1,9 +1,10 @@
 import { buildResponse } from "../handlers/helpers";
-import {products as PRODUCTS} from "../../product-service/mocks/data";
+import { getProductsList } from "../../product-service/pg-db/products";
 
 export const handler = async () => {
   try {
-    return buildResponse(200, PRODUCTS);
+    const products = await getProductsList();
+    return buildResponse(200, products);
   } catch (error) {
     return buildResponse(500, {
       message: error as string,

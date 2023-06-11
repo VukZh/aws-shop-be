@@ -13,14 +13,31 @@ dotenv.config();
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, "ProductServiceStack-task3", {
+const stack = new cdk.Stack(app, "ProductServiceStack-task4", {
   env: { region: "eu-west-1" },
 });
 
 const sharedLambdaProps: Partial<NodejsFunctionProps> = {
   runtime: lambda.Runtime.NODEJS_18_X,
   environment: {
+    PG_HOST: process.env.PG_HOST!,
+    PG_PORT: process.env.PG_PORT!,
+    PG_DATABASE: process.env.PG_DATABASE!,
+    PG_USERNAME: process.env.PG_USERNAME!,
+    PG_PASSWORD: process.env.PG_PASSWORD!,
     PRODUCT_AWS_REGION: process.env.PRODUCT_AWS_REGION!,
+  },
+  bundling: {
+    externalModules: [
+      'pg-native',
+      'sqlite3',
+      'pg-query-stream',
+      'oracledb',
+      'better-sqlite3',
+      'tedious',
+      'mysql',
+      'mysql2',
+    ],
   },
 };
 
@@ -29,7 +46,7 @@ const GetProductsListLambda = new NodejsFunction(
   "GetProductsListLambda",
   {
     ...sharedLambdaProps,
-    functionName: "getProductsList",
+    functionName: "getProductsList-4",
     entry: "src/product-service/handlers/getProductsList.ts",
   }
 );
@@ -39,12 +56,22 @@ const GetProductsByIdLambda = new NodejsFunction(
   "GetProductsByIdLambda",
   {
     ...sharedLambdaProps,
-    functionName: "getProductsById",
+    functionName: "getProductsById-4",
     entry: "src/product-service/handlers/getProductsById.ts",
   }
 );
 
-const api = new apiGateway.HttpApi(stack, "ProductApi", {
+const CreateProductLambda = new NodejsFunction(
+  stack,
+  "CreateProductLambda",
+  {
+    ...sharedLambdaProps,
+    functionName: "createProduct-4",
+    entry: "src/product-service/handlers/createProduct.ts",
+  }
+);
+
+const api = new apiGateway.HttpApi(stack, "ProductApi-4", {
   corsPreflight: {
     allowHeaders: ["*"],
     allowOrigins: ["*"],
@@ -68,4 +95,13 @@ api.addRoutes({
   ),
   path: "/products/{productId}",
   methods: [apiGateway.HttpMethod.GET],
+});
+
+api.addRoutes({
+  integration: new HttpLambdaIntegration(
+    "CreateProductIntegration",
+    CreateProductLambda
+  ),
+  path: "/products",
+  methods: [apiGateway.HttpMethod.POST],
 });

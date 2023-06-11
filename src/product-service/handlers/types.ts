@@ -1,3 +1,5 @@
+import {UUID} from "io-ts-types";
+
 export interface BuildResponseReturnType {
   statusCode: number;
   headers: object;
@@ -10,6 +12,10 @@ export type ProductType = {
   price: number;
   title: string;
 };
+
+export interface ProductTypeWithCount extends ProductType {
+  count: number;
+}
 
 export type ProductsType = Array<ProductType>;
 

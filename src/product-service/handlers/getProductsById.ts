@@ -1,18 +1,17 @@
 import { buildResponse } from "../handlers/helpers";
-import {products as PRODUCT} from "../../product-service/mocks/data";
-import { APIGatewayProxyEventPathParameters } from "aws-lambda";
+import { getProductsById } from "../../product-service/pg-db/products";
+import {UUID} from "io-ts-types";
 
-const getProduct = (pathParameters: APIGatewayProxyEventPathParameters) => {
-  return PRODUCT.find((product) => product.id == pathParameters.productId);
-};
 export const handler = async (event: {
   pathParameters: { productId: string };
 }) => {
   try {
     const pathParameters = event.pathParameters || {};
-    const product = getProduct(pathParameters);
-    if (product) {
-      return buildResponse(200, product);
+    if (event?.pathParameters?.productId) {
+      const product = await getProductsById(pathParameters.productId);
+      if (product) {
+        return buildResponse(200, product);
+      }
     }
     throw "Product not found";
   } catch (error) {
