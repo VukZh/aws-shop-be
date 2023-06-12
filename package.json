@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.350.0",
+    "@aws-sdk/util-dynamodb": "^3.350.0",
     "@types/yup": "^0.29.14",
     "knex": "^2.4.2",
     "pg": "^8.11.0",
