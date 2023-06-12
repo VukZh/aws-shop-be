@@ -38,7 +38,7 @@ export const handler = async (event: { body: string }) => {
         JSON.stringify(productResult) + JSON.stringify(stockResult)
       )
     );
-    console.log("createProduct:", result);
+    console.log("createProduct:", product, result);
     return buildResponse(201, JSON.stringify(product));
   } catch (error) {
     const codeError = error == "Product data is invalid" ? 400 : 500;
