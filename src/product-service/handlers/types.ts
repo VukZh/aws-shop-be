@@ -22,3 +22,8 @@ export type buildResponseBody = {
   product?: ProductType;
   message?: string;
 };
+
+export type StockType = {
+  product_id: string;
+  count: number;
+}

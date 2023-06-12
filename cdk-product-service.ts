@@ -21,7 +21,7 @@ const sharedLambdaProps: Partial<NodejsFunctionProps> = {
   runtime: lambda.Runtime.NODEJS_18_X,
   environment: {
     PRODUCT_AWS_REGION: process.env.PRODUCT_AWS_REGION!,
-  }
+  },
 };
 
 const GetProductsListLambdaDDB = new NodejsFunction(
@@ -34,15 +34,15 @@ const GetProductsListLambdaDDB = new NodejsFunction(
   }
 );
 
-// const GetProductsByIdLambda = new NodejsFunction(
-//   stack,
-//   "GetProductsByIdLambda",
-//   {
-//     ...sharedLambdaProps,
-//     functionName: "getProductsById-4",
-//     entry: "src/product-service/handlers/getProductsById.ts",
-//   }
-// );
+const GetProductsByIdLambdaDDB = new NodejsFunction(
+  stack,
+  "GetProductsByIdLambdaDDB",
+  {
+    ...sharedLambdaProps,
+    functionName: "getProductsById-4DDB",
+    entry: "src/product-service/handlers/getProductsById.ts",
+  }
+);
 //
 // const CreateProductLambda = new NodejsFunction(
 //   stack,
@@ -71,14 +71,14 @@ api.addRoutes({
   methods: [apiGateway.HttpMethod.GET],
 });
 
-// api.addRoutes({
-//   integration: new HttpLambdaIntegration(
-//     "GetProductsByIdIntegration",
-//     GetProductsByIdLambda
-//   ),
-//   path: "/products/{productId}",
-//   methods: [apiGateway.HttpMethod.GET],
-// });
+api.addRoutes({
+  integration: new HttpLambdaIntegration(
+    "GetProductsByIdIntegration",
+    GetProductsByIdLambdaDDB
+  ),
+  path: "/products/{productId}",
+  methods: [apiGateway.HttpMethod.GET],
+});
 //
 // api.addRoutes({
 //   integration: new HttpLambdaIntegration(

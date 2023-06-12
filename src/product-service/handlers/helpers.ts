@@ -1,4 +1,4 @@
-import { BuildResponseReturnType } from "../handlers/types";
+import {BuildResponseReturnType, StockType} from "../handlers/types";
 
 export const buildResponse = (
   statusCode: number,
@@ -12,3 +12,8 @@ export const buildResponse = (
   },
   body: JSON.stringify(body),
 });
+
+export const findCount = (id: string, stock: Array<StockType>) => {
+  const findStock = stock.find((stock) => stock.product_id === id);
+  return findStock?.count;
+};
