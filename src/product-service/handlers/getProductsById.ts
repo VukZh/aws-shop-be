@@ -1,6 +1,5 @@
 import { buildResponse } from "../handlers/helpers";
 import { getProductsById } from "../../product-service/pg-db/products";
-import {UUID} from "io-ts-types";
 
 export const handler = async (event: {
   pathParameters: { productId: string };

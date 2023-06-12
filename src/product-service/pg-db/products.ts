@@ -1,5 +1,4 @@
 import PGClient from "./index";
-import {UUID} from "io-ts-types";
 import {ProductTypeWithCount} from "~/product-service/handlers/types";
 
 

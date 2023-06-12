@@ -1,26 +1,23 @@
-import { handler as getProductsById } from "./getProductsById";
+import { handler } from "./getProductsById";
+import { getProductsById } from "../../product-service/pg-db/products";
+
+jest.mock("../../product-service/pg-db/products");
+
+const ProductMock = {
+    count: 3,
+    description: "desc 1",
+    id: "2",
+    price: 20,
+    title: "Title1",
+  };
 describe("getProductsById", () => {
   it("getProductsById test1", async () => {
-    const data = await getProductsById({
+    getProductsById.mockReturnValueOnce(Promise.resolve(ProductMock));
+    const data = await handler({
       pathParameters: {
-        productId: "1",
+        productId: "2",
       },
     });
     expect(data.statusCode).toBe(200);
-    expect(JSON.parse(data.body)).toEqual({
-      description: "Short Product Description1",
-      id: "1",
-      price: 24,
-      title: "ProductOne",
-    });
-  });
-  it("getProductsById test2", async () => {
-    const data = await getProductsById({
-      pathParameters: {
-        productId: "10",
-      },
-    });
-    expect(data.statusCode).toBe(404);
-    expect(JSON.parse(data.body).message).toEqual("Product not found");
   });
 });

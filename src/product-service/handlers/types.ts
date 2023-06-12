@@ -1,5 +1,3 @@
-import {UUID} from "io-ts-types";
-
 export interface BuildResponseReturnType {
   statusCode: number;
   headers: object;

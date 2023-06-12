@@ -1,7 +1,6 @@
 import { buildResponse } from "../handlers/helpers";
 import { createProduct } from "../../product-service/pg-db/products";
-import {UUID} from "io-ts-types";
-import {ProductTypeWithCount} from "~/product-service/handlers/types";
+import { ProductTypeWithCount } from "../../product-service/handlers/types";
 
 export const handler = async (event: { body: string }) => {
   try {
