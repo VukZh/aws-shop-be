@@ -34,9 +34,7 @@ export const handler = async (event: {
       );
 
       // @ts-ignore
-      const clearStock: Record<string, NativeAttributeValue> = unmarshall(
-        stock.Item
-      );
+      const clearStock: Record<string, NativeAttributeValue> = unmarshall(stock.Item);
 
       if (clearProduct) {
         const result = buildResponse(200, {

@@ -43,16 +43,16 @@ const GetProductsByIdLambdaDDB = new NodejsFunction(
     entry: "src/product-service/handlers/getProductsById.ts",
   }
 );
-//
-// const CreateProductLambda = new NodejsFunction(
-//   stack,
-//   "CreateProductLambda",
-//   {
-//     ...sharedLambdaProps,
-//     functionName: "createProduct-4",
-//     entry: "src/product-service/handlers/createProduct.ts",
-//   }
-// );
+
+const CreateProductLambdaDDB = new NodejsFunction(
+  stack,
+  "CreateProductLambdaDDB",
+  {
+    ...sharedLambdaProps,
+    functionName: "createProduct-4DDB",
+    entry: "src/product-service/handlers/createProduct.ts",
+  }
+);
 
 const api = new apiGateway.HttpApi(stack, "ProductApi-4DDB", {
   corsPreflight: {
@@ -79,12 +79,12 @@ api.addRoutes({
   path: "/products/{productId}",
   methods: [apiGateway.HttpMethod.GET],
 });
-//
-// api.addRoutes({
-//   integration: new HttpLambdaIntegration(
-//     "CreateProductIntegration",
-//     CreateProductLambda
-//   ),
-//   path: "/products",
-//   methods: [apiGateway.HttpMethod.POST],
-// });
+
+api.addRoutes({
+  integration: new HttpLambdaIntegration(
+    "CreateProductIntegration",
+    CreateProductLambdaDDB
+  ),
+  path: "/products",
+  methods: [apiGateway.HttpMethod.POST],
+});
