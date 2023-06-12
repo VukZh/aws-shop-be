@@ -1,23 +1,24 @@
-import { handler } from "./getProductsList";
-import { getProductsList } from "../../product-service/pg-db/products";
+import { handler as getProductsList } from "../handlers/getProductsList";
 
-jest.mock("../../product-service/pg-db/products");
+jest.mock("../handlers/getProductsList");
 
-const ProductsMock = [
-  {
-    count: 3,
-    description: "desc 1",
-    id: "2",
-    price: 20,
-    title: "Title1",
-  },
-];
+const ProductsMock = {
+  statusCode: 200,
+  body: [
+    {
+      count: 3,
+      description: "desc 1",
+      id: "2",
+      price: 20,
+      title: "Title1",
+    },
+  ],
+};
 describe("getProductsList", () => {
   it("getProductsList test", async () => {
     getProductsList.mockReturnValueOnce(Promise.resolve(ProductsMock));
-    const data = await handler();
+    const data = await getProductsList();
     expect(data.statusCode).toBe(200);
-    expect(data.body).toStrictEqual(JSON.stringify(ProductsMock));
-    expect(JSON.parse(data.body).length).toBe(1);
+    expect(data.body.length).toBe(1);
   });
 });

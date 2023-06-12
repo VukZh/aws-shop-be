@@ -1,4 +1,4 @@
-import { buildResponse } from "../handlers/helpers";
+import { buildResponse, checkNewProduct } from "../handlers/helpers";
 import { ProductTypeWithCount } from "../../product-service/handlers/types";
 import { DynamoDBClient, PutItemCommand } from "@aws-sdk/client-dynamodb";
 import { marshall } from "@aws-sdk/util-dynamodb";
@@ -9,10 +9,12 @@ export const handler = async (event: { body: string }) => {
   try {
     const product: ProductTypeWithCount = JSON.parse(event.body);
 
+    if (checkNewProduct(product) === "") throw "Product data is invalid";
+
     const paramsProducts = {
       TableName: "products",
       Item: marshall({
-        id: product.id,
+        id: checkNewProduct(product),
         title: product.title,
         description: product.description,
         price: product.price,
@@ -39,10 +41,11 @@ export const handler = async (event: { body: string }) => {
     console.log("createProduct:", result);
     return buildResponse(201, JSON.stringify(product));
   } catch (error) {
-    const err = buildResponse(500, {
+    const codeError = error == "Product data is invalid" ? 400 : 500;
+    const err = buildResponse(codeError, {
       message: error as string,
     });
-    console.log("getProductsList error:", err);
+    console.log("createProduct error:", err);
     return err;
   }
 };
