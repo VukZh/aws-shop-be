@@ -9,12 +9,14 @@ export const handler = async (event: { body: string }) => {
   try {
     const product: ProductTypeWithCount = JSON.parse(event.body);
 
-    if (checkNewProduct(product) === "") throw "Product data is invalid";
+    const uuid = checkNewProduct(product);
+
+    if (uuid === "") throw "Product data is invalid";
 
     const paramsProducts = {
       TableName: "products",
       Item: marshall({
-        id: checkNewProduct(product),
+        id: uuid,
         title: product.title,
         description: product.description,
         price: product.price,
@@ -23,7 +25,7 @@ export const handler = async (event: { body: string }) => {
 
     const paramsStocks = {
       TableName: "stocks",
-      Item: marshall({ product_id: product.id, count: product.count }),
+      Item: marshall({ product_id: uuid, count: product.count }),
     };
 
     const productCommand = new PutItemCommand(paramsProducts);

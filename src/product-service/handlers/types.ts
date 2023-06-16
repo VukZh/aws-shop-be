@@ -6,7 +6,7 @@ export interface BuildResponseReturnType {
 
 export type ProductType = {
   description: string;
-  id: string;
+  id?: string;
   price: number;
   title: string;
 };
