@@ -14,15 +14,31 @@ export const getProductsById = (productId: string) =>
     .where("products.id", productId)
     .first();
 
-export const createProduct = (product: ProductTypeWithCount) =>
-  PGClient("products").insert({
-    description: product.description,
-    id: product.id,
-    price: product.price,
-    title: product.title,
-  }).then(() => {
-    PGClient("stocks").insert({
+export const createProduct = async (product: ProductTypeWithCount) =>
+{
+  try {
+    await PGClient("products").insert({
+      description: product.description,
+      id: product.id,
+      price: product.price,
+      title: product.title,
+    });
+    await PGClient("stocks").insert({
       product_id: product.id,
       count: product.count,
-    })
-  });
+    });
+  } catch (error) {
+    console.error(error);
+  }
+};
+  // PGClient("products").insert({
+  //   description: product.description,
+  //   id: product.id,
+  //   price: product.price,
+  //   title: product.title,
+  // }).then(() => {
+  //   PGClient("stocks").insert({
+  //     product_id: product.id,
+  //     count: product.count,
+  //   })
+  // });
