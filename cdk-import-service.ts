@@ -8,6 +8,7 @@ import {
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as apiGateway from "@aws-cdk/aws-apigatewayv2-alpha";
 import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
+import {LambdaDestination} from "aws-cdk-lib/aws-s3-notifications";
 
 dotenv.config();
 
@@ -42,6 +43,14 @@ const importProductsCSVFileLambda = new NodejsFunction(
 
 bucket.grantReadWrite(importProductsCSVFileLambda);
 
+const importCSVFileParserLambda = new NodejsFunction(stack, 'importCSVFileParserLambda', {
+  ...sharedLambdaProps,
+  functionName: 'importCSVFileParser',
+  entry: 'src/import-service/handlers/importCSVFileParser.ts'
+});
+
+bucket.grantReadWrite(importCSVFileParserLambda);
+
 const api = new apiGateway.HttpApi(stack, "ProductApi", {
   corsPreflight: {
     allowHeaders: ["*"],
@@ -58,3 +67,9 @@ api.addRoutes({
   path: "/import",
   methods: [apiGateway.HttpMethod.GET],
 });
+
+bucket.addEventNotification(
+  s3.EventType.OBJECT_CREATED,
+  new LambdaDestination(importCSVFileParserLambda),
+  { prefix: 'uploaded/' }
+);
