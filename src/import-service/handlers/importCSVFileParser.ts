@@ -13,6 +13,8 @@ const s3Client = new S3Client({ region: "eu-west-1" });
 export const handler = async (event: S3Event) => {
   console.log("event", JSON.stringify(event));
 
+  const result: Array<any> = []
+
   try {
     const bucketName = event.Records[0].s3.bucket.name;
     const objectKey = event.Records[0].s3.object.key;
@@ -28,17 +30,18 @@ export const handler = async (event: S3Event) => {
     const s3ReadStream = Body as Readable;
 
     const parser = s3ReadStream.pipe(
-      csvParser({
-        mapValues: ({ header, index, value }) =>
-          console.log(`row from ${objectKey} > ${value}`),
-      })
+      csvParser({strict: true})
     );
 
     parser.on("data", async (data) => {
       console.log("data", data);
+      result.push(data)
     });
 
     parser.on("end", async () => {
+
+      console.log("result ", result);
+
       await s3Client.send(
         new CopyObjectCommand({
           Bucket: bucketName,
