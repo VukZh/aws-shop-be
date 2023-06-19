@@ -11,7 +11,6 @@ import * as console from "console";
 
 const s3Client = new S3Client({ region: "eu-west-1" });
 export const handler = async (event: S3Event) => {
-  console.log("event", JSON.stringify(event));
 
   const result: Array<any> = []
 
@@ -34,7 +33,7 @@ export const handler = async (event: S3Event) => {
     );
 
     parser.on("data", async (data) => {
-      console.log("data", data);
+      console.log(`${objectKey} data No ${result.length + 1}`, data);
       result.push(data)
     });
 

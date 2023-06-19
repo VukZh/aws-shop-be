@@ -21,7 +21,7 @@ const stack = new cdk.Stack(app, "ImportServiceStack", {
 const bucket = s3.Bucket.fromBucketName(
   stack,
   "ImportBucket",
-  "aws-course-import-products-vuk"
+  process.env.S3_IMPORT_BUCKET!
 );
 
 const sharedLambdaProps: Partial<NodejsFunctionProps> = {
