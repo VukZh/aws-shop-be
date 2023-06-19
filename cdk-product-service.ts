@@ -13,7 +13,7 @@ dotenv.config();
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, "ProductServiceStack-task3", {
+const stack = new cdk.Stack(app, "ProductServiceStack-task4DDB", {
   env: { region: "eu-west-1" },
 });
 
@@ -24,27 +24,37 @@ const sharedLambdaProps: Partial<NodejsFunctionProps> = {
   },
 };
 
-const GetProductsListLambda = new NodejsFunction(
+const GetProductsListLambdaDDB = new NodejsFunction(
   stack,
-  "GetProductsListLambda",
+  "GetProductsListLambdaDDB",
   {
     ...sharedLambdaProps,
-    functionName: "getProductsList",
+    functionName: "getProductsList-4DDB",
     entry: "src/product-service/handlers/getProductsList.ts",
   }
 );
 
-const GetProductsByIdLambda = new NodejsFunction(
+const GetProductsByIdLambdaDDB = new NodejsFunction(
   stack,
-  "GetProductsByIdLambda",
+  "GetProductsByIdLambdaDDB",
   {
     ...sharedLambdaProps,
-    functionName: "getProductsById",
+    functionName: "getProductsById-4DDB",
     entry: "src/product-service/handlers/getProductsById.ts",
   }
 );
 
-const api = new apiGateway.HttpApi(stack, "ProductApi", {
+const CreateProductLambdaDDB = new NodejsFunction(
+  stack,
+  "CreateProductLambdaDDB",
+  {
+    ...sharedLambdaProps,
+    functionName: "createProduct-4DDB",
+    entry: "src/product-service/handlers/createProduct.ts",
+  }
+);
+
+const api = new apiGateway.HttpApi(stack, "ProductApi-4DDB", {
   corsPreflight: {
     allowHeaders: ["*"],
     allowOrigins: ["*"],
@@ -55,7 +65,7 @@ const api = new apiGateway.HttpApi(stack, "ProductApi", {
 api.addRoutes({
   integration: new HttpLambdaIntegration(
     "GetProductsListIntegration",
-    GetProductsListLambda
+    GetProductsListLambdaDDB
   ),
   path: "/products",
   methods: [apiGateway.HttpMethod.GET],
@@ -64,8 +74,17 @@ api.addRoutes({
 api.addRoutes({
   integration: new HttpLambdaIntegration(
     "GetProductsByIdIntegration",
-    GetProductsByIdLambda
+    GetProductsByIdLambdaDDB
   ),
   path: "/products/{productId}",
   methods: [apiGateway.HttpMethod.GET],
+});
+
+api.addRoutes({
+  integration: new HttpLambdaIntegration(
+    "CreateProductIntegration",
+    CreateProductLambdaDDB
+  ),
+  path: "/products",
+  methods: [apiGateway.HttpMethod.POST],
 });

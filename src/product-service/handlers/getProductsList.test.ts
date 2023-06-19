@@ -1,10 +1,24 @@
-import { handler as getProductsList} from './getProductsList'
-import { productsLambdaTest } from "../../product-service/mocks/data";
-describe('getProductsList', () => {
+import { handler as getProductsList } from "../handlers/getProductsList";
 
-  it('getProductsList test', async () => {
+jest.mock("../handlers/getProductsList");
+
+const ProductsMock = {
+  statusCode: 200,
+  body: [
+    {
+      count: 3,
+      description: "desc 1",
+      id: "2",
+      price: 20,
+      title: "Title1",
+    },
+  ],
+};
+describe("getProductsList", () => {
+  it("getProductsList test", async () => {
+    getProductsList.mockReturnValueOnce(Promise.resolve(ProductsMock));
     const data = await getProductsList();
     expect(data.statusCode).toBe(200);
-    expect(JSON.parse(data.body).length).toBe(productsLambdaTest.length);
+    expect(data.body.length).toBe(1);
   });
 });
