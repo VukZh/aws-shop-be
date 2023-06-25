@@ -8,6 +8,9 @@ import {
 } from "aws-cdk-lib/aws-lambda-nodejs";
 
 import dotenv from "dotenv";
+import * as sqs from "aws-cdk-lib/aws-sqs";
+import * as sns from "aws-cdk-lib/aws-sns";
+import {SqsEventSource} from "aws-cdk-lib/aws-lambda-event-sources";
 
 dotenv.config();
 
@@ -17,10 +20,20 @@ const stack = new cdk.Stack(app, "ProductServiceStack-task4DDB", {
   env: { region: "eu-west-1" },
 });
 
+const catalogItemsQueue = new sqs.Queue(stack, "catalogItemsQueue", {
+  queueName: "catalog-items-queue",
+});
+
+const catalogItemsTopic = new sns.Topic(stack, "catalogItemsTopic", {
+  topicName: "catalog-items-topic",
+});
+
 const sharedLambdaProps: Partial<NodejsFunctionProps> = {
   runtime: lambda.Runtime.NODEJS_18_X,
   environment: {
     PRODUCT_AWS_REGION: process.env.PRODUCT_AWS_REGION!,
+    CATALOG_ITEMS_QUEUE_ARN: catalogItemsQueue.queueArn,
+    CATALOG_ITEMS_TOPIC_ARN: catalogItemsTopic.topicArn,
   },
 };
 
@@ -88,3 +101,24 @@ api.addRoutes({
   path: "/products",
   methods: [apiGateway.HttpMethod.POST],
 });
+
+const CatalogBatchProcessLambda = new NodejsFunction(
+  stack,
+  "CatalogBatchProcessLambda",
+  {
+    ...sharedLambdaProps,
+    functionName: "catalogBatchProcess-task6",
+    entry: "src/product-service/handlers/catalogBatchProcess.ts",
+  }
+);
+
+catalogItemsQueue.grantSendMessages(CatalogBatchProcessLambda);
+CatalogBatchProcessLambda.addEventSource(new SqsEventSource(catalogItemsQueue, {batchSize: 5}));
+
+new sns.Subscription(stack, "catalogSubscription", {
+  endpoint: process.env.EMAIL!,
+  protocol: sns.SubscriptionProtocol.EMAIL,
+  topic: catalogItemsTopic
+})
+
+catalogItemsTopic.grantPublish(CatalogBatchProcessLambda);

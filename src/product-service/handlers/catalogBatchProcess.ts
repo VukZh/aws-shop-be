@@ -3,12 +3,13 @@ import {
   checkNewProduct,
 } from "~/product-service/handlers/helpers";
 import { marshall } from "@aws-sdk/util-dynamodb";
-import {
-  DynamoDBClient,
-  PutItemCommand,
-} from "@aws-sdk/client-dynamodb";
+import { DynamoDBClient, PutItemCommand } from "@aws-sdk/client-dynamodb";
+
+import { PublishCommand, SNSClient } from "@aws-sdk/client-sns";
 
 const ddbClient = new DynamoDBClient({ region: "eu-west-1" });
+
+const snsClient = new SNSClient({ region: "eu-west-1" });
 export const handler = async (event: { Records: Array<any> }) => {
   console.log("event> ", event.Records.length, event.Records[0].body);
 
@@ -46,6 +47,20 @@ export const handler = async (event: { Records: Array<any> }) => {
       await ddbClient.send(productCommand);
       await ddbClient.send(stockCommand);
 
+      await snsClient.send(
+        new PublishCommand({
+          Subject: "Add new items file",
+          Message: JSON.stringify(product),
+          TopicArn: "arn:aws:sns:eu-west-1:642155392726:catalog-items-topic",
+          MessageAttributes: {
+            count: {
+              DataType: "Number",
+              StringValue: product.count,
+            },
+          },
+        })
+      );
+
       return buildResponse(201, JSON.stringify(product));
     });
 
@@ -60,7 +75,7 @@ export const handler = async (event: { Records: Array<any> }) => {
     const err = buildResponse(codeError, {
       message: error as string,
     });
-    console.log("createProduct error:", err);
+    console.log("createProduct error:", err, error);
     return err;
   }
 };
