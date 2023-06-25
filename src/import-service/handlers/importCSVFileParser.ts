@@ -5,11 +5,13 @@ import {
   GetObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
+import {SendMessageCommand, SQSClient} from "@aws-sdk/client-sqs";
 import { Readable } from "stream";
 import csvParser from "csv-parser";
 import * as console from "console";
 
 const s3Client = new S3Client({ region: "eu-west-1" });
+const sqsClient = new SQSClient({ region: "eu-west-1" });
 export const handler = async (event: S3Event) => {
 
   const result: Array<any> = []
@@ -32,10 +34,18 @@ export const handler = async (event: S3Event) => {
       csvParser({strict: true})
     );
 
-    parser.on("data", async (data) => {
-      console.log(`${objectKey} data No ${result.length + 1}`, data);
-      result.push(data)
-    });
+    for await (const record of parser) {
+        result.push(record)
+        console.log(`${objectKey} data No ${result.length + 1}`, record);
+        try {
+          const messageResult = await sqsClient.send(new SendMessageCommand({
+            QueueUrl: 'https://sqs.eu-west-1.amazonaws.com/642155392726/catalog-items-queue',
+            MessageBody: JSON.stringify(record),
+          }));
+        } catch (error) {
+          console.error(`Error sending message to SQS: ${error}`);
+        }
+    }
 
     parser.on("end", async () => {
 

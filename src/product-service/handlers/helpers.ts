@@ -30,8 +30,8 @@ export const checkNewProduct = (product: ProductTypeWithCount): string => {
     !uuidRegex.test(id) ||
     product.title === "" ||
     typeof product.description !== "string" ||
-    typeof product.price !== "number" ||
-    typeof product.count !== "number" ||
+    !Number(product.price) ||
+    !Number(product.count) ||
     product.count === 0
   )
     return "";
