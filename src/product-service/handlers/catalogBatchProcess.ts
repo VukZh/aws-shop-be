@@ -23,7 +23,7 @@ export const handler = async (event: { Records: Array<any> }) => {
         throw "It's not a product data";
 
       await createProduct(record);
-      const res = await snsClient.send(
+      await snsClient.send(
         new PublishCommand({
           Subject: "Add new items file",
           Message: JSON.stringify(product),
