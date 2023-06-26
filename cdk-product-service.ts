@@ -119,6 +119,18 @@ new sns.Subscription(stack, "catalogSubscription", {
   endpoint: process.env.EMAIL!,
   protocol: sns.SubscriptionProtocol.EMAIL,
   topic: catalogItemsTopic
+});
+
+new sns.Subscription(stack, "MoreThan100ItemsCatalogSubscription", {
+  endpoint: process.env.EMAIL_BIG_COUNT!,
+  protocol: sns.SubscriptionProtocol.EMAIL,
+  topic: catalogItemsTopic,
+  filterPolicy: {
+    count: sns.SubscriptionFilter.numericFilter({
+      greaterThanOrEqualTo: 100
+    })
+  }
 })
+
 
 catalogItemsTopic.grantPublish(CatalogBatchProcessLambda);

@@ -1,10 +1,9 @@
-import {
-  buildResponse,
-} from "~/product-service/handlers/helpers";
+import { buildResponse } from "../../product-service/handlers/helpers";
 
-import {handler as createProduct} from '../handlers/createProduct';
+import { handler as createProduct } from "../handlers/createProduct";
 
 import { PublishCommand, SNSClient } from "@aws-sdk/client-sns";
+import * as console from "console";
 
 const snsClient = new SNSClient({ region: "eu-west-1" });
 export const handler = async (event: { Records: Array<any> }) => {
@@ -24,7 +23,7 @@ export const handler = async (event: { Records: Array<any> }) => {
         throw "It's not a product data";
 
       await createProduct(record);
-      await snsClient.send(
+      const res = await snsClient.send(
         new PublishCommand({
           Subject: "Add new items file",
           Message: JSON.stringify(product),
@@ -43,14 +42,11 @@ export const handler = async (event: { Records: Array<any> }) => {
 
     return buildResponse(201, "All products have been created successfully");
   } catch (error) {
-    const codeError =
-      error == ("Product data is invalid" || "It's not a product data")
-        ? 400
-        : 500;
+    console.log("error:", error);
+    const codeError = error === "Product data is invalid" || error === "It's not a product data" ? 400 : 500;
     const err = buildResponse(codeError, {
       message: error as string,
     });
-    console.log("createProduct error:", err, error);
     return err;
   }
 };
