@@ -10,6 +10,10 @@ import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as apiGateway from "@aws-cdk/aws-apigatewayv2-alpha";
 import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
 import { LambdaDestination } from "aws-cdk-lib/aws-s3-notifications";
+import {
+  HttpLambdaAuthorizer,
+  HttpLambdaResponseType,
+} from "@aws-cdk/aws-apigatewayv2-authorizers-alpha";
 
 dotenv.config();
 
@@ -73,6 +77,20 @@ const api = new apiGateway.HttpApi(stack, "ProductApi", {
   },
 });
 
+const existingAuthLambda = lambda.Function.fromFunctionArn(
+  stack,
+  "existingAuthLambda",
+  process.env.ARN_AUTH_LMB!
+);
+
+const importAuthorizer = new HttpLambdaAuthorizer(
+  "Authorizer",
+  existingAuthLambda,
+  {
+    responseTypes: [HttpLambdaResponseType.SIMPLE],
+  }
+);
+
 api.addRoutes({
   integration: new HttpLambdaIntegration(
     "importProductsCSVFileIntegration",
@@ -80,6 +98,7 @@ api.addRoutes({
   ),
   path: "/import",
   methods: [apiGateway.HttpMethod.GET],
+  authorizer: importAuthorizer,
 });
 
 bucket.addEventNotification(
