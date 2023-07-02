@@ -79,17 +79,13 @@ const api = new apiGateway.HttpApi(stack, "ProductApi", {
 
 const existingAuthLambda = lambda.Function.fromFunctionArn(
   stack,
-  "existingAuthLambda",
+  "basicAuthorizer",
   process.env.ARN_AUTH_LMB!
 );
 
-const importAuthorizer = new HttpLambdaAuthorizer(
-  "Authorizer",
-  existingAuthLambda,
-  {
-    responseTypes: [HttpLambdaResponseType.SIMPLE],
-  }
-);
+const importAuthorizer = new HttpLambdaAuthorizer('basicAuthorizer', existingAuthLambda, {
+  responseTypes: [HttpLambdaResponseType.IAM],
+});
 
 api.addRoutes({
   integration: new HttpLambdaIntegration(
