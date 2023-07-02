@@ -18,6 +18,7 @@ const sharedLambdaProps: Partial<NodejsFunctionProps> = {
   runtime: lambda.Runtime.NODEJS_18_X,
   environment: {
     PRODUCT_AWS_REGION: process.env.PRODUCT_AWS_REGION!,
+    [process.env.LOGIN!]: process.env.PSW!
   },
 };
 

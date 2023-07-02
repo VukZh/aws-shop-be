@@ -1,7 +1,9 @@
-export const handler = async (event: { headers: { authorizationToken: any } }) => {
-  const { authorizationToken } = event.headers;
+import dotenv from "dotenv";
 
-  console.log("---===---", event, authorizationToken);
+export const handler = async (event: { headers: { authorizationToken: any } }) => {
+  dotenv.config({debug: true});
+
+  const { authorizationToken } = event.headers;
 
   if (!authorizationToken) {
     console.log("---401---");
@@ -11,13 +13,15 @@ export const handler = async (event: { headers: { authorizationToken: any } }) =
     };
   }
 
-  const decodedToken = Buffer.from(authorizationToken, "base64").toString(
+  const decodedToken = Buffer.from(authorizationToken.split(' ')[1], "base64").toString(
     "utf-8"
-  );
+  ).split(':');
 
-  const validCredentials = process.env.VukZh;
+  // const validCredentials = process.env.VUKZH;
 
-  if (decodedToken !== validCredentials) {
+  console.log("decodedToken >> ", decodedToken, process.env[decodedToken[0]])
+
+  if (!process.env[decodedToken[0]] || decodedToken[1] !== process.env[decodedToken[0]]) {
     console.log("---403---");
     return {
       statusCode: 403,
