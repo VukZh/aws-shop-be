@@ -1,10 +1,47 @@
-import express from 'express';
+import express from "express";
 import dotenv from "dotenv";
+import * as process from "process";
+import axios from "axios";
+
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 5001;
-app.get('/', (request, response) => {
-  response.send('Hello world!');
-});
+
 app.listen(port, () => console.log(`Running on port ${port}`));
+
+app.use(express.json());
+
+type Recipient = "CARTS" | "PRODUCTS";
+
+app.all("*/", (req, res) => {
+  console.log("origURL", req.originalUrl);
+  console.log("reqMethod", req.method);
+  console.log("body", req.body);
+  const recipient = req.originalUrl.split("/")[1];
+  console.log("recipient", recipient);
+  const recipientURL = process.env[recipient];
+
+  if (recipientURL) {
+    const reqConfig = {
+      method: req.method,
+      url: `${recipientURL}${req.originalUrl}`,
+      ...(Object.keys(req.body || {}).length > 0 && { data: req.body }),
+    };
+    console.log("reqConfig", reqConfig);
+    axios(reqConfig)
+      .then((resp) => {
+        console.log("response from recipient", resp.data);
+        res.json(resp.data);
+      })
+      .catch((err) => {
+        console.log("req error: ", JSON.stringify(err));
+        if (err.response) {
+          const { status, data } = err.response;
+          res.status(status).json(data);
+        } else {
+          res.status(500).json({ error: err.message });
+        }
+      });
+  }
+});
