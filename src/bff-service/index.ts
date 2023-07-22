@@ -14,6 +14,13 @@ app.use(express.json());
 
 type Recipient = "CARTS" | "PRODUCTS";
 
+const cache = {
+  products: {
+    data: {},
+    timestamp: 0,
+  },
+};
+
 app.all("*/", (req, res) => {
   console.log("origURL", req.originalUrl);
   console.log("reqMethod", req.method);
@@ -29,19 +36,38 @@ app.all("*/", (req, res) => {
       ...(Object.keys(req.body || {}).length > 0 && { data: req.body }),
     };
     console.log("reqConfig", reqConfig);
-    axios(reqConfig)
-      .then((resp) => {
-        console.log("response from recipient", resp.data);
-        res.json(resp.data);
-      })
-      .catch((err) => {
-        console.log("req error: ", JSON.stringify(err));
-        if (err.response) {
-          const { status, data } = err.response;
-          res.status(status).json(data);
-        } else {
-          res.status(500).json({ error: err.message });
-        }
-      });
+
+    const now = Date.now();
+    if (
+      req.originalUrl === "/products" &&
+      req.method === "GET" &&
+      cache.products &&
+      now - cache.products.timestamp < 120000
+    ) {
+      console.log("......... sent cache .........");
+      return res.json(cache.products.data);
+    } else {
+      axios(reqConfig)
+        .then((resp) => {
+          console.log("response from recipient", resp.data);
+          if (req.originalUrl === "/products" && req.method === "GET") {
+            console.log("......... save cache .........");
+            cache.products = {
+              data: resp.data,
+              timestamp: Date.now(),
+            };
+          }
+          res.json(resp.data);
+        })
+        .catch((err) => {
+          console.log("req error: ", JSON.stringify(err));
+          if (err.response) {
+            const { status, data } = err.response;
+            res.status(status).json(data);
+          } else {
+            res.status(500).json({ error: err.message });
+          }
+        });
+    }
   }
 });
