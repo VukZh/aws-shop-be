@@ -28,7 +28,7 @@ app.all("*/", (req, res) => {
   const recipient = req.originalUrl.split("/")[1];
   console.log("recipient", recipient);
   const recipientURL = process.env[recipient];
-
+  console.log("recipientURL", recipientURL);
   if (recipientURL) {
     const reqConfig = {
       method: req.method,
