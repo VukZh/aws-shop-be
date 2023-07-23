@@ -20,6 +20,7 @@ export const handler = async (event: { body: string }) => {
         title: product.title,
         description: product.description,
         price: Number(product.price),
+        img: product.img
       }),
     };
 

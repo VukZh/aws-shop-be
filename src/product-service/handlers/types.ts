@@ -9,6 +9,7 @@ export type ProductType = {
   id?: string;
   price: number;
   title: string;
+  img?: string
 };
 
 export interface ProductTypeWithCount extends ProductType {
