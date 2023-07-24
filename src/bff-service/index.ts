@@ -14,8 +14,6 @@ app.listen(port, () => console.log(`Running on port ${port}`));
 app.use(cors());
 app.use(express.json());
 
-type Recipient = "CARTS" | "PRODUCTS";
-
 const cache = {
   products: {
     data: {},
@@ -30,7 +28,7 @@ app.all("*/", (req, res) => {
   const recipient = req.originalUrl.split("/")[1];
   console.log("recipient", recipient);
   const recipientURL = process.env[recipient];
-  console.log("recipientURL", recipientURL);
+  // console.log("recipientURL", recipientURL);
   if (recipientURL) {
     const reqConfig = {
       method: req.method,
