@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import * as process from "process";
 import axios from "axios";
+import cors from "cors";
 
 dotenv.config();
 
@@ -10,6 +11,7 @@ const port = process.env.PORT || 5001;
 
 app.listen(port, () => console.log(`Running on port ${port}`));
 
+app.use(cors());
 app.use(express.json());
 
 type Recipient = "CARTS" | "PRODUCTS";
