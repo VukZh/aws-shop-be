@@ -28,3 +28,8 @@ dist-ssr
 cdk.out
 .env
 /cdk.out/
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
