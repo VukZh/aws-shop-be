@@ -1,7 +1,7 @@
 "use strict";
 exports.__esModule = true;
 exports.buildResponse = void 0;
-var buildResponse = function (statusCode, body) { return ({
+const buildResponse = function (statusCode, body) { return ({
     statusCode: statusCode,
     headers: {
         "Access-Control-Allow-Credentials": true,
