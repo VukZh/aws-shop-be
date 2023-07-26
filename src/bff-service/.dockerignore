@@ -1,0 +1,21 @@
+# Ignore development files
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Ignore git files
+.git
+
+# Ignore any build artifacts
+dist
+
+# Ignore test files
+test
+
+# Ignore any editor-specific files
+.vscode
+.idea
+
+# Ignore markdown files
+*.md
+!README*.md
