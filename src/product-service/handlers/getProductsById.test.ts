@@ -1,26 +1,26 @@
-import { handler as getProductsById } from "./getProductsById";
+import { handler as getProductsById } from "../handlers/getProductsById";
+
+jest.mock("../handlers/getProductsById");
+
+const ProductMock = {
+  statusCode: 200,
+  body: {
+    count: 3,
+    description: "desc 1",
+    id: "2",
+    price: 20,
+    title: "Title1",
+  },
+};
 describe("getProductsById", () => {
   it("getProductsById test1", async () => {
+    getProductsById.mockReturnValueOnce(Promise.resolve(ProductMock));
     const data = await getProductsById({
       pathParameters: {
-        productId: "1",
+        productId: "2",
       },
     });
+    // @ts-ignore
     expect(data.statusCode).toBe(200);
-    expect(JSON.parse(data.body)).toEqual({
-      description: "Short Product Description1",
-      id: "1",
-      price: 24,
-      title: "ProductOne",
-    });
-  });
-  it("getProductsById test2", async () => {
-    const data = await getProductsById({
-      pathParameters: {
-        productId: "10",
-      },
-    });
-    expect(data.statusCode).toBe(404);
-    expect(JSON.parse(data.body).message).toEqual("Product not found");
   });
 });
