@@ -19,13 +19,13 @@ export const handler = async (event: { body: string }) => {
         id: uuid,
         title: product.title,
         description: product.description,
-        price: product.price,
+        price: Number(product.price),
       }),
     };
 
     const paramsStocks = {
       TableName: "stocks",
-      Item: marshall({ product_id: uuid, count: product.count }),
+      Item: marshall({ product_id: uuid, count: Number(product.count) }),
     };
 
     const productCommand = new PutItemCommand(paramsProducts);
